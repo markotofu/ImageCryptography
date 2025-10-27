@@ -5,17 +5,23 @@ numToLetter = [
 	'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
     'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
 	'1','2','3','4','5','6','7','8','9','0',
-	'.',',','!','?',' ', "\n"
+	'.',',','!','?',' ', "-","\n"
 ]
 
 def imgToArray(img):
     width, height = img.size
-    arr = np.zeros((width, 3), dtype=int)
-    for i in range(width):
-        r, g, b = img.getpixel((i, 0))
-        arr[i][0] = r
-        arr[i][1] = g
-        arr[i][2] = b
+    total_pixels = width * height
+    arr = np.zeros((total_pixels, 3), dtype=int)
+    
+    pixel_index = 0
+    for y in range(height):
+        for x in range(width):
+            r, g, b = img.getpixel((x, y))
+            arr[pixel_index][0] = r
+            arr[pixel_index][1] = g
+            arr[pixel_index][2] = b
+            pixel_index += 1
+    
     return arr
 
 def decryption():
