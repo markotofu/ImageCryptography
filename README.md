@@ -23,5 +23,5 @@
 - Do NOT commit .venv to git. It is ignored by .gitignore.
 - If you add new dependencies, run: pip freeze > requirements.txt
 - CURRENT CODE IS RUNNING IN PYTHON 3.14; this is my first project using python so be wary for bugs and stuff!
-
+- Code limitations - no usage of capital letters
 In order to 
