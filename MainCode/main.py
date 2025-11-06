@@ -1,5 +1,3 @@
-from PIL import Image
-import numpy as np
 import encryption
 import decryption
 mode = None
@@ -23,7 +21,8 @@ while(status):
         status = False
     elif (mode =="2"):
         print("\nImage Decoder Mode Chosen\n")
-        decryption.decryption()
+        key = input("Enter the decryption key: ")
+        decryption.decryption(key)
         status = False
     else:
         print("Invalid input, please try again\n")

@@ -110,3 +110,13 @@ ImageCryptography/
 - Add GUI for easier interaction
 - Support multi-row images for better aspect ratios
 - Add encryption/password protection 
+
+
+
+
+## How it works
+    - Main
+
+## Encryption
+
+# Decryption
