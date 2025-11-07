@@ -1,5 +1,6 @@
 from PIL import Image
 import numpy as np
+import os
 
 numToLetter = [
     'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
@@ -241,7 +242,8 @@ def parseKey(key):
 
 def decryption(encryptionKey):
     """Main decryption function - only requires the key as input"""
-    ImagePath = "output_image.png"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    ImagePath = os.path.join(script_dir, "output_image.png")
     img = Image.open(ImagePath)
     
     # Convert image to grid

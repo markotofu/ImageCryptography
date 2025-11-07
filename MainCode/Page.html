@@ -265,7 +265,8 @@
       }
 
       textarea,
-      input[type="text"] {
+      input[type="text"],
+      input[type="file"] {
         width: 100%;
         padding: 12px;
         border: 2px solid #e0e0e0;
@@ -276,9 +277,30 @@
       }
 
       textarea:focus,
-      input[type="text"]:focus {
+      input[type="text"]:focus,
+      input[type="file"]:focus {
         outline: none;
         border-color: #667eea;
+      }
+
+      input[type="file"] {
+        padding: 10px;
+        cursor: pointer;
+      }
+
+      input[type="file"]::file-selector-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-right: 10px;
+      }
+
+      input[type="file"]::file-selector-button:hover {
+        opacity: 0.9;
       }
 
       textarea {
@@ -316,8 +338,31 @@
         transition: transform 0.3s;
       }
 
-      button[type="submit"]:hover {
+      button[type="submit"]:hover:not(:disabled) {
         transform: translateY(-2px);
+      }
+
+      button[type="submit"]:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .download-btn {
+        display: inline-block;
+        padding: 12px 30px;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 1.1em;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      }
+
+      .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
       }
 
       .result {
@@ -498,6 +543,11 @@
             <div class="image-preview">
               <h4>Generated Image:</h4>
               <img id="encrypted-image" src="" alt="Encrypted Image" />
+              <div style="margin-top: 15px;">
+                <a href="/download-image" download class="download-btn" id="download-btn">
+                  ⬇️ Download Encrypted Image (PNG)
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -505,6 +555,19 @@
         <!-- Decryption Section -->
         <div id="decrypt-section" class="section">
           <form id="decrypt-form">
+            <div class="input-group">
+              <label for="image-upload">Upload Encrypted Image:</label>
+              <input
+                type="file"
+                id="image-upload"
+                name="image"
+                accept="image/png"
+                required
+                onchange="handleImageUpload()"
+              />
+              <div id="image-upload-status" style="margin-top: 10px; color: #667eea; font-weight: bold;"></div>
+            </div>
+
             <div class="input-group">
               <label for="key-input">Enter Decryption Key:</label>
               <input
@@ -516,7 +579,7 @@
               />
             </div>
 
-            <button type="submit">🔓 Decrypt</button>
+            <button type="submit" id="decrypt-btn" disabled style="opacity: 0.5; cursor: not-allowed;">🔓 Decrypt</button>
           </form>
 
           <div class="loading" id="decrypt-loading">
@@ -603,6 +666,29 @@
         }
       }
 
+      function handleImageUpload() {
+        const fileInput = document.getElementById("image-upload");
+        const decryptBtn = document.getElementById("decrypt-btn");
+        const statusDiv = document.getElementById("image-upload-status");
+        
+        if (fileInput.files && fileInput.files[0]) {
+          const file = fileInput.files[0];
+          if (file.type === "image/png") {
+            statusDiv.textContent = "✓ Image uploaded: " + file.name;
+            statusDiv.style.color = "#28a745";
+            decryptBtn.disabled = false;
+            decryptBtn.style.opacity = "1";
+            decryptBtn.style.cursor = "pointer";
+          } else {
+            statusDiv.textContent = "⚠ Please upload a PNG image";
+            statusDiv.style.color = "#dc3545";
+            decryptBtn.disabled = true;
+            decryptBtn.style.opacity = "0.5";
+            decryptBtn.style.cursor = "not-allowed";
+          }
+        }
+      }
+
       // Encryption form handler
       document
         .getElementById("encrypt-form")
@@ -668,6 +754,12 @@
 
           const formData = new FormData();
           formData.append("key", document.getElementById("key-input").value);
+          
+          // Add the uploaded image file
+          const imageFile = document.getElementById("image-upload").files[0];
+          if (imageFile) {
+            formData.append("image", imageFile);
+          }
 
           try {
             const response = await fetch("/decrypt", {

@@ -50,9 +50,19 @@ def decrypt():
         if not key:
             return jsonify({'success': False, 'error': 'No key provided'})
         
-        # Check if output_image.png exists
-        if not os.path.exists('output_image.png'):
-            return jsonify({'success': False, 'error': 'No encrypted image found. Please encrypt text first.'})
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        output_path = os.path.join(script_dir, 'output_image.png')
+        
+        # Check if an image file was uploaded
+        if 'image' in request.files:
+            image_file = request.files['image']
+            if image_file.filename == '':
+                return jsonify({'success': False, 'error': 'No image file selected'})
+            
+            # Save the uploaded image as output_image.png in MainCode folder
+            image_file.save(output_path)
+        elif not os.path.exists(output_path):
+            return jsonify({'success': False, 'error': 'No encrypted image found. Please upload an image.'})
         
         # Decrypt the image
         decrypted_text = decryption.decryption(key)
@@ -68,7 +78,21 @@ def decrypt():
 @app.route('/get-image')
 def get_image():
     try:
-        return send_file('output_image.png', mimetype='image/png')
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        output_path = os.path.join(script_dir, 'output_image.png')
+        return send_file(output_path, mimetype='image/png')
+    except Exception as e:
+        return str(e), 404
+
+@app.route('/download-image')
+def download_image():
+    try:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        output_path = os.path.join(script_dir, 'output_image.png')
+        return send_file(output_path, 
+                        mimetype='image/png',
+                        as_attachment=True,
+                        download_name='encrypted_image.png')
     except Exception as e:
         return str(e), 404
 
