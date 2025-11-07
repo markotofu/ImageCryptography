@@ -4,10 +4,10 @@ import numpy as np
 numToLetter = [
     'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
     '0','1','2','3','4','5','6','7','8','9',
-    ' ','.',',','!','?',';',':','"','-','(',')','<','>','{','}'
+    ' ','.',',','!','?',';',':','"','-','(',')','<','>','{','}',
     '@','#','$','&','*','+','=','_','%','\n','þ'
 ]
-NULL_CHAR_INDEX = len(numToLetter) -1   # Index 59: 'þ' (our null character)
+NULL_CHAR_INDEX = len(numToLetter) -1  # Index 63: 'þ' 
 
 
 def modular_inverse(a, m):
@@ -136,108 +136,59 @@ def reverseMatrixObfuscation(pixelArray, matrixData):
     return originalPixels
 
 
-def reverseDetMultiplier(grid, randomPos):
-    """
-    Reverse the cascading determinant multiplication.
-    Must work backwards from the end to the starting position.
-    Note: Top row (row 0) is NOT affected - skip it
-    """
-    # Save top row unchanged
-    topRow = grid[0][:]
+def reverseDetMultiplier(grid, pickedIndex):
+    """Reverse the determinant-based cascading transformation
+    Must decrypt in FORWARD order since each decrypted pixel is needed for the next"""
     
-    # Flatten grid EXCLUDING the first row
-    allPixels = []
-    for rowIdx in range(1, len(grid)):  # Start from row 1, skip row 0
-        for pixel in grid[rowIdx]:
-            allPixels.append(pixel[:])  # Copy pixels
-    
-    startIndex = randomPos
-    
-    if startIndex >= len(allPixels) - 2:
+    if len(grid) == 0 or len(grid[0]) == 0:
         return grid
     
-    # Work backwards from the last affected pixel to startIndex
-    # We need to reverse the multiplications in reverse order
+    # Flatten the grid
+    flatPixels = []
+    for row in grid:
+        for pixel in row:
+            flatPixels.append(pixel[:])  # Copy pixels
     
-    # First, identify all the positions that were modified
-    modifiedIndices = []
-    currentIndex = startIndex - 1
-    while currentIndex < len(allPixels):
-        modifiedIndices.append(currentIndex)
-        currentIndex += 1
-    
-    # Reverse the list to process from end to beginning
-    modifiedIndices.reverse()
-    
-    # For each modified pixel (in reverse), we need to find the modular inverse
-    for i, pixelIdx in enumerate(modifiedIndices):
-        # Reconstruct the determinant that was used
-        # We need the three pixels that formed the window
-        
-        if pixelIdx == startIndex - 1:
-            # First modified pixel - use original neighbors
-            if pixelIdx + 2 >= len(allPixels):
-                continue
-            pixelLeft = allPixels[pixelIdx]
-            pixelCenter = allPixels[pixelIdx + 1]
-            pixelRight = allPixels[pixelIdx + 2]
-        elif pixelIdx >= len(allPixels) - 1:
-            # Last pixel case
-            if pixelIdx < 2:
-                continue
-            pixelLeft = allPixels[pixelIdx - 2]
-            pixelCenter = allPixels[pixelIdx - 1]
-            pixelRight = allPixels[pixelIdx] if pixelIdx < len(allPixels) else [0, 0, 0]
-        else:
-            # Middle pixels - the tricky part is that previous pixels were already modified
-            # We need to use the current state for pixels that come before
-            if pixelIdx < 1:
-                continue
-            pixelLeft = allPixels[pixelIdx - 1]
-            pixelCenter = allPixels[pixelIdx]
-            if pixelIdx + 1 < len(allPixels):
-                pixelRight = allPixels[pixelIdx + 1]
-            else:
-                pixelRight = [0, 0, 0]
-        
-        # Calculate the determinant
-        matrix = np.array([pixelLeft, pixelCenter, pixelRight])
-        det = int(np.linalg.det(matrix))
-        
-        # Use same determinant values as encryption
-        multiplier = (abs(det) % 3) + 1
-        addValue = (abs(det) % 127) + 1
-        
-        # Find modular inverse of multiplier mod 256
-        det_inv = modular_inverse(multiplier, 256)
-        
-        if det_inv is None:
-            # If no inverse, pixel can't be reversed exactly
-            continue
-        
-        # Reverse transformation: add, divide (multiply by inverse), subtract
-        original = []
-        for j in range(3):
-            val = allPixels[pixelIdx][j]
-            val = (val + addValue) % 256          # Reverse the subtraction
-            val = (val * det_inv) % 256           # Reverse the multiplication
-            val = (val - addValue) % 256          # Reverse the addition
-            original.append(val)
-        
-        allPixels[pixelIdx] = original
-    
-    # Reconstruct grid: top row unchanged, then reversed data rows
+    width = len(grid[0])
     height = len(grid)
-    width = len(grid[0]) if height > 0 else 0
-    newGrid = [topRow]  # Start with unchanged top row
     
-    # Rebuild data rows from reversed pixels
+    # Get the original picked pixel and neighbors from first row (unchanged)
+    pickedPixel = flatPixels[pickedIndex][:]
+    leftIndex = (pickedIndex - 1) % width
+    rightIndex = (pickedIndex + 1) % width
+    
+    pixelLeft = flatPixels[leftIndex][:]
+    pixelRight = flatPixels[rightIndex][:]
+    
+    # Decrypt in FORWARD order (same direction as encryption)
+    # Start from the second row (index = width)
+    for i in range(width, len(flatPixels)):
+        # Calculate determinant using the SAME reference pixels as during encryption
+        matrix = np.array([pixelLeft, pickedPixel, pixelRight], dtype=int)
+        det = int(np.round(np.linalg.det(matrix)))
+        
+        # Get the modification value: (det % 4) * 64
+        modification = (det % 4) * 64
+        
+        # Reverse the transformation: subtract modification and mod 256
+        originalPixel = [(flatPixels[i][j] - modification) % 256 for j in range(3)]
+        
+        # Update the pixel in place
+        flatPixels[i] = originalPixel
+        
+        # Cascade the references (same as encryption, but using decrypted pixel)
+        pixelLeft = pickedPixel[:]
+        pickedPixel = pixelRight[:]
+        pixelRight = originalPixel[:]  # Use the decrypted pixel
+    
+    # Convert back to grid format
+    newGrid = []
     pixelIndex = 0
-    for y in range(1, height):  # Start from row 1
+    for y in range(height):
         row = []
         for x in range(width):
-            if pixelIndex < len(allPixels):
-                row.append(allPixels[pixelIndex])
+            if pixelIndex < len(flatPixels):
+                row.append(flatPixels[pixelIndex])
                 pixelIndex += 1
         newGrid.append(row)
     
@@ -299,38 +250,40 @@ def decryption(encryptionKey):
     # Parse the key
     commands = parseKey(encryptionKey)
     
-    # Reverse the encryption process (in reverse order)
-    # 1. Reverse detMultiplier if it was applied
-    detCommand = [cmd for cmd in commands if cmd['type'] == 'm']
-    if detCommand:
-        randomPos = int(detCommand[0]['data'])
-        grid = reverseDetMultiplier(grid, randomPos)
+    # Process commands in the order they appear (already in reverse order from encryption)
+    # Filter only the manipulation commands (M and m)
+    manipulationCommands = [cmd for cmd in commands if cmd['type'] in ['M', 'm']]
     
-    # 3. Reverse matrixObfuscation (multiple times if needed, in REVERSE order)
-    matrixCommands = [cmd for cmd in commands if cmd['type'] == 'M']
-    # Reverse the matrices in reverse order (last applied first reversed)
-    for matrixCommand in reversed(matrixCommands):
-        # Convert grid to flat array for matrix operations
-        flatPixels = []
-        for row in grid:
-            for pixel in row:
-                flatPixels.append(pixel)
+    # Apply them in the order they appear in the key
+    for command in manipulationCommands:
+        if command['type'] == 'm':
+            # Reverse detMultiplier
+            randomPos = int(command['data'])
+            grid = reverseDetMultiplier(grid, randomPos)
         
-        # Apply reverse matrix transformation
-        flatPixels = reverseMatrixObfuscation(flatPixels, matrixCommand['data'])
-        
-        # Convert back to grid
-        height = len(grid)
-        width = len(grid[0]) if height > 0 else 0
-        grid = []
-        pixelIndex = 0
-        for y in range(height):
-            row = []
-            for x in range(width):
-                if pixelIndex < len(flatPixels):
-                    row.append(flatPixels[pixelIndex])
-                    pixelIndex += 1
-            grid.append(row)
+        elif command['type'] == 'M':
+            # Reverse matrixObfuscation
+            # Convert grid to flat array for matrix operations
+            flatPixels = []
+            for row in grid:
+                for pixel in row:
+                    flatPixels.append(pixel)
+            
+            # Apply reverse matrix transformation
+            flatPixels = reverseMatrixObfuscation(flatPixels, command['data'])
+            
+            # Convert back to grid
+            height = len(grid)
+            width = len(grid[0]) if height > 0 else 0
+            grid = []
+            pixelIndex = 0
+            for y in range(height):
+                row = []
+                for x in range(width):
+                    if pixelIndex < len(flatPixels):
+                        row.append(flatPixels[pixelIndex])
+                        pixelIndex += 1
+                grid.append(row)
     
     # Now convert grid back to flat pixel array after all matrix reversals
     pixelArray = reverseGrid(grid)
