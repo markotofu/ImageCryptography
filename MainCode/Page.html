@@ -11,9 +11,33 @@
         box-sizing: border-box;
       }
 
+      :root {
+        --bg-grad-1: #667eea;
+        --bg-grad-2: #764ba2;
+        --primary-1: #667eea;
+        --primary-2: #764ba2;
+        --primary-border: #667eea;
+      }
+
+      body.theme-encrypt {
+        --bg-grad-1: #667eea;
+        --bg-grad-2: #764ba2;
+        --primary-1: #667eea;
+        --primary-2: #764ba2;
+        --primary-border: #667eea;
+      }
+
+      body.theme-decrypt {
+        --bg-grad-1: #0f2027;
+        --bg-grad-2: #2c5364;
+        --primary-1: #1f3b4d;
+        --primary-2: #16222a;
+        --primary-border: #1f3b4d;
+      }
+
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
         min-height: 100vh;
         display: flex;
         justify-content: center;
@@ -31,7 +55,7 @@
       }
 
       h1 {
-        color: #667eea;
+        color: var(--primary-1);
         text-align: center;
         margin-bottom: 30px;
         font-size: 2.5em;
@@ -49,7 +73,7 @@
 
       .landing-title {
         font-size: 3em;
-        color: #667eea;
+        color: var(--primary-1);
         margin-bottom: 20px;
         animation: fadeInDown 0.8s ease-out;
       }
@@ -116,10 +140,10 @@
         left: 5px;
         height: 50px;
         width: 170px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--primary-1) 0%, var(--primary-2) 100%);
         border-radius: 25px;
         transition: transform 0.3s ease;
-        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.25);
       }
 
       .toggle-switch.decrypt .toggle-slider {
@@ -135,7 +159,7 @@
       }
 
       .get-started-btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--primary-1) 0%, var(--primary-2) 100%);
         color: white;
         border: none;
         padding: 18px 60px;
@@ -144,7 +168,7 @@
         border-radius: 50px;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
         animation: fadeIn 1.2s ease-out;
       }
 
@@ -197,10 +221,15 @@
         display: block;
       }
 
+      /* Hide mode switcher once inside exclusive mode page */
+      .main-app.exclusive .mode-selector {
+        display: none;
+      }
+
       .back-btn {
         background: #f0f0f0;
-        color: #667eea;
-        border: 2px solid #667eea;
+        color: var(--primary-1);
+        border: 2px solid var(--primary-border);
         padding: 10px 25px;
         border-radius: 10px;
         cursor: pointer;
@@ -210,7 +239,7 @@
       }
 
       .back-btn:hover {
-        background: #667eea;
+        background: var(--primary-1);
         color: white;
       }
 
@@ -224,9 +253,9 @@
       .mode-btn {
         flex: 1;
         padding: 15px 30px;
-        border: 2px solid #667eea;
+        border: 2px solid var(--primary-border);
         background: white;
-        color: #667eea;
+        color: var(--primary-1);
         border-radius: 10px;
         cursor: pointer;
         font-size: 1.1em;
@@ -235,13 +264,13 @@
       }
 
       .mode-btn:hover {
-        background: #667eea;
+        background: var(--primary-1);
         color: white;
         transform: translateY(-2px);
       }
 
       .mode-btn.active {
-        background: #667eea;
+        background: var(--primary-1);
         color: white;
       }
 
@@ -280,7 +309,7 @@
       input[type="text"]:focus,
       input[type="file"]:focus {
         outline: none;
-        border-color: #667eea;
+        border-color: var(--primary-1);
       }
 
       input[type="file"] {
@@ -301,6 +330,82 @@
 
       input[type="file"]::file-selector-button:hover {
         opacity: 0.9;
+      }
+
+      /* Drag & Drop Zone Styles */
+      .drop-zone {
+        border: 3px dashed var(--primary-1);
+        border-radius: 12px;
+        padding: 30px;
+        text-align: center;
+        background: #f8f9ff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .drop-zone:hover {
+        background: #f0f2ff;
+        border-color: var(--primary-2);
+      }
+
+      .drop-zone.dragover {
+        background: #e8ebff;
+        border-color: var(--primary-2);
+        border-style: solid;
+        transform: scale(1.02);
+      }
+
+      .drop-zone .title {
+        font-size: 1.2em;
+        color: var(--primary-1);
+        font-weight: bold;
+        margin-bottom: 8px;
+      }
+
+      .drop-zone .hint {
+        color: #666;
+        font-size: 0.95em;
+        margin-bottom: 15px;
+      }
+
+      .drop-zone .btn-link {
+        color: var(--primary-1);
+        text-decoration: underline;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .drop-zone .btn-link:hover {
+        color: var(--primary-2);
+      }
+
+      .file-meta {
+        margin-top: 15px;
+        padding: 12px;
+        background: white;
+        border-radius: 8px;
+        color: #28a745;
+        font-weight: bold;
+        border: 2px solid #28a745;
+      }
+
+      .file-preview {
+        margin-top: 10px;
+        padding: 12px;
+        background: white;
+        border-radius: 8px;
+        text-align: left;
+        font-family: "Courier New", monospace;
+        font-size: 0.9em;
+        max-height: 150px;
+        overflow-y: auto;
+        color: #333;
+        border: 1px solid #ddd;
+      }
+
+      .file-input-hidden {
+        display: none;
       }
 
       textarea {
@@ -348,7 +453,10 @@
       }
 
       .download-btn {
-        display: inline-block;
+        display: block;
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto;
         padding: 12px 30px;
         background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         color: white;
@@ -365,6 +473,55 @@
         box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
       }
 
+      .copy-key-btn {
+        display: block;
+        width: 100%;
+        max-width: 360px;
+        margin: 12px auto 0;
+        padding: 10px 24px;
+        background: linear-gradient(135deg, var(--primary-1) 0%, var(--primary-2) 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1em;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+
+      .copy-key-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .copy-key-btn:active {
+        transform: translateY(0);
+      }
+
+      .home-btn {
+        display: block;
+        width: 100%;
+        max-width: 360px;
+        margin: 20px auto 0;
+        padding: 12px 30px;
+        background: #f0f0f0;
+        color: var(--primary-1);
+        border: 2px solid var(--primary-border);
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .home-btn:hover {
+        background: var(--primary-1);
+        color: white;
+        transform: translateY(-2px);
+      }
+
       .result {
         margin-top: 30px;
         padding: 20px;
@@ -378,7 +535,7 @@
       }
 
       .result h3 {
-        color: #667eea;
+        color: var(--primary-1);
         margin-bottom: 15px;
       }
 
@@ -388,7 +545,7 @@
         border-radius: 8px;
         word-break: break-all;
         font-family: "Courier New", monospace;
-        border: 2px solid #667eea;
+        border: 2px solid var(--primary-border);
       }
 
       .image-preview {
@@ -408,7 +565,7 @@
         border-radius: 8px;
         white-space: pre-wrap;
         font-family: "Courier New", monospace;
-        border: 2px solid #667eea;
+        border: 2px solid var(--primary-border);
         max-height: 300px;
         overflow-y: auto;
       }
@@ -425,7 +582,7 @@
 
       .spinner {
         border: 4px solid #f3f3f3;
-        border-top: 4px solid #667eea;
+        border-top: 4px solid var(--primary-1);
         border-radius: 50%;
         width: 40px;
         height: 40px;
@@ -443,11 +600,11 @@
       }
     </style>
   </head>
-  <body>
+  <body class="theme-encrypt">
     <div class="container">
       <!-- Landing Page -->
       <div class="landing-page" id="landing-page">
-        <h1 class="landing-title">🔐 Image Cryptography</h1>
+  <h1 class="landing-title">Image Cryptography</h1>
         <p class="landing-subtitle">
           Secure your messages by converting text into encrypted images
         </p>
@@ -457,23 +614,23 @@
           <div class="toggle-switch" id="mode-toggle">
             <div class="toggle-slider"></div>
             <div class="toggle-option left" onclick="selectMode('encrypt')">
-              🔒 Encrypt
+              Encrypt
             </div>
             <div class="toggle-option right" onclick="selectMode('decrypt')">
-              🔓 Decrypt
+              Decrypt
             </div>
           </div>
         </div>
 
         <button class="get-started-btn" onclick="startApp()">
-          Get Started →
+          Get Started
         </button>
       </div>
 
       <!-- Main Application -->
       <div class="main-app" id="main-app">
-        <button class="back-btn" onclick="goBack()">← Back to Home</button>
-        <h1>🔐 Image Cryptography</h1>
+  <button class="back-btn" onclick="goBack()">Back to Home</button>
+  <h1>Image Cryptography</h1>
 
         <div class="mode-selector">
           <button
@@ -515,7 +672,7 @@
                     value="file"
                     onchange="toggleInput()"
                   />
-                  Use testText File
+                  Upload Text File (.txt)
                 </label>
               </div>
             </div>
@@ -528,8 +685,21 @@
                 placeholder="Type your message here..."
               ></textarea>
             </div>
+            <div class="input-group" id="file-input-group" style="display:none;">
+              <label>Upload .txt File:</label>
+              <input class="file-input-hidden" type="file" id="text-file-input" accept=".txt" />
+              <div id="text-drop-zone" class="drop-zone" tabindex="0" aria-label="Drag and drop a .txt file here or browse">
+                <div class="title">Drag & Drop your .txt file</div>
+                <div class="hint">Only plain text (.txt). Max 1 file.</div>
+                <div class="actions" role="group">
+                  <a class="btn-link" href="#" onclick="document.getElementById('text-file-input').click(); return false;">Browse Files</a>
+                </div>
+                <div id="text-file-meta" class="file-meta" style="display:none;"></div>
+                <pre id="text-file-preview" class="file-preview" style="display:none;"></pre>
+              </div>
+            </div>
 
-            <button type="submit">🔒 Encrypt</button>
+            <button type="submit">Encrypt</button>
           </form>
 
           <div class="loading" id="encrypt-loading">
@@ -540,14 +710,14 @@
           <div class="result" id="encrypt-result">
             <h3>Encryption Result:</h3>
             <div class="key-display" id="encryption-key"></div>
-            <div class="image-preview">
-              <h4>Generated Image:</h4>
-              <img id="encrypted-image" src="" alt="Encrypted Image" />
-              <div style="margin-top: 15px;">
-                <a href="/download-image" download class="download-btn" id="download-btn">
-                  ⬇️ Download Encrypted Image (PNG)
-                </a>
-              </div>
+            <button class="copy-key-btn" onclick="copyKey(this)">Copy Key</button>
+            <div style="margin-top: 20px;">
+              <a href="/download-image" download class="download-btn" id="download-btn">
+                Download Encrypted Image (PNG)
+              </a>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+              <button class="home-btn" onclick="goBack()">Return to Home</button>
             </div>
           </div>
         </div>
@@ -556,16 +726,16 @@
         <div id="decrypt-section" class="section">
           <form id="decrypt-form">
             <div class="input-group">
-              <label for="image-upload">Upload Encrypted Image:</label>
-              <input
-                type="file"
-                id="image-upload"
-                name="image"
-                accept="image/png"
-                required
-                onchange="handleImageUpload()"
-              />
-              <div id="image-upload-status" style="margin-top: 10px; color: #667eea; font-weight: bold;"></div>
+              <label>Upload Encrypted Image (PNG):</label>
+              <input class="file-input-hidden" type="file" id="image-upload" accept=".png,image/png" />
+              <div id="image-drop-zone" class="drop-zone" tabindex="0" aria-label="Drag and drop a PNG image here or browse">
+                <div class="title">Drag & Drop PNG Image</div>
+                <div class="hint">Only PNG images. Encrypted output from this app.</div>
+                <div class="actions" role="group">
+                  <a class="btn-link" href="#" onclick="document.getElementById('image-upload').click(); return false;">Browse Files</a>
+                </div>
+                <div id="image-file-meta" class="file-meta" style="display:none;"></div>
+              </div>
             </div>
 
             <div class="input-group">
@@ -579,7 +749,7 @@
               />
             </div>
 
-            <button type="submit" id="decrypt-btn" disabled style="opacity: 0.5; cursor: not-allowed;">🔓 Decrypt</button>
+            <button type="submit" id="decrypt-btn">Decrypt</button>
           </form>
 
           <div class="loading" id="decrypt-loading">
@@ -590,6 +760,9 @@
           <div class="result" id="decrypt-result">
             <h3>Decrypted Text:</h3>
             <div class="decrypted-text" id="decrypted-text"></div>
+            <div style="margin-top: 20px; text-align: center;">
+              <button class="home-btn" onclick="goBack()">Return to Home</button>
+            </div>
           </div>
         </div>
       </div>
@@ -603,24 +776,32 @@
         const toggle = document.getElementById("mode-toggle");
         if (mode === "decrypt") {
           toggle.classList.add("decrypt");
+          document.body.classList.remove('theme-encrypt');
+          document.body.classList.add('theme-decrypt');
         } else {
           toggle.classList.remove("decrypt");
+          document.body.classList.remove('theme-decrypt');
+          document.body.classList.add('theme-encrypt');
         }
       }
 
       function startApp() {
-        document.getElementById("landing-page").classList.add("hidden");
-        document.getElementById("main-app").classList.add("active");
-
-        // Set the correct mode in the main app
-        if (selectedMode === "decrypt") {
-          switchMode("decrypt");
-        }
+        const landing = document.getElementById("landing-page");
+        const main = document.getElementById("main-app");
+        landing.classList.add("hidden");
+        main.classList.add("active", "exclusive");
+        // Always switch to the selected mode and lock the page to that mode
+        switchMode(selectedMode);
       }
 
       function goBack() {
         document.getElementById("landing-page").classList.remove("hidden");
-        document.getElementById("main-app").classList.remove("active");
+        const main = document.getElementById("main-app");
+        main.classList.remove("active");
+        main.classList.remove("exclusive");
+        // Reset theme to default encrypt when back home
+        document.body.classList.remove('theme-decrypt');
+        document.body.classList.add('theme-encrypt');
       }
 
       function switchMode(mode) {
@@ -631,8 +812,12 @@
 
         if (mode === "encrypt") {
           document.getElementById("encrypt-mode-btn").classList.add("active");
+          document.body.classList.remove('theme-decrypt');
+          document.body.classList.add('theme-encrypt');
         } else {
           document.getElementById("decrypt-mode-btn").classList.add("active");
+          document.body.classList.remove('theme-encrypt');
+          document.body.classList.add('theme-decrypt');
         }
 
         // Hide all sections
@@ -655,38 +840,155 @@
 
       function toggleInput() {
         const textInputGroup = document.getElementById("text-input-group");
+        const fileInputGroup = document.getElementById("file-input-group");
         const inputMethod = document.querySelector(
           'input[name="input-method"]:checked'
         ).value;
 
         if (inputMethod === "text") {
           textInputGroup.style.display = "block";
+          fileInputGroup.style.display = "none";
         } else {
           textInputGroup.style.display = "none";
+          fileInputGroup.style.display = "block";
+        }
+      }
+      // Drag & drop helpers for .txt upload (encrypt)
+      let selectedTxtFile = null;
+      const txtInput = document.getElementById('text-file-input');
+      const txtDrop = document.getElementById('text-drop-zone');
+      const txtMeta = document.getElementById('text-file-meta');
+      const txtPreview = document.getElementById('text-file-preview');
+
+      function clearTxtUI(){ txtMeta.style.display='none'; txtPreview.style.display='none'; txtMeta.textContent=''; txtPreview.textContent=''; }
+      function isTxt(name){ return name && name.toLowerCase().endsWith('.txt'); }
+      async function setSelectedTxt(file){
+        selectedTxtFile = file;
+        try{ const dt = new DataTransfer(); dt.items.add(file); txtInput.files = dt.files; }catch(_){}
+        txtMeta.textContent = `✓ ${file.name} • ${(file.size/1024).toFixed(1)} KB`;
+        txtMeta.style.display = 'block';
+        try{
+          const text = await file.text();
+          const snippet = text.slice(0, 1000);
+          txtPreview.textContent = snippet + (text.length > 1000 ? '\n...(truncated)' : '');
+          txtPreview.style.display = snippet ? 'block' : 'none';
+        }catch(_){ txtPreview.style.display='none'; }
+      }
+      if (txtInput){
+        txtInput.addEventListener('change', async (e)=>{
+          clearTxtUI();
+          const f = e.target.files && e.target.files[0];
+          if(!f){ selectedTxtFile=null; return; }
+          if(!isTxt(f.name)){ alert('Only .txt files are allowed.'); txtInput.value=''; selectedTxtFile=null; return; }
+          await setSelectedTxt(f);
+        });
+      }
+      if (txtDrop){
+        ['dragenter','dragover'].forEach(evt=>{
+          txtDrop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); txtDrop.classList.add('dragover'); });
+        });
+        ['dragleave','dragend','drop'].forEach(evt=>{
+          txtDrop.addEventListener(evt, (e)=>{ if(evt!=='drop'){ txtDrop.classList.remove('dragover'); } });
+        });
+        txtDrop.addEventListener('drop', async (e)=>{
+          e.preventDefault(); e.stopPropagation(); txtDrop.classList.remove('dragover');
+          clearTxtUI();
+          const f = e.dataTransfer.files && e.dataTransfer.files[0];
+          if(!f){ return; }
+          if(!isTxt(f.name)){ alert('Only .txt files are allowed.'); return; }
+          await setSelectedTxt(f);
+        });
+      }
+
+      // Drag & drop helpers for PNG upload (decrypt)
+      let selectedPngFile = null;
+      const pngInput = document.getElementById('image-upload');
+      const pngDrop = document.getElementById('image-drop-zone');
+      const pngMeta = document.getElementById('image-file-meta');
+
+      function clearPngUI(){ pngMeta.style.display='none'; pngMeta.textContent=''; }
+      function isPng(name){ return name && name.toLowerCase().endsWith('.png'); }
+      function setSelectedPng(file){
+        selectedPngFile = file;
+        try{ const dt = new DataTransfer(); dt.items.add(file); pngInput.files = dt.files; }catch(_){}
+        pngMeta.textContent = `✓ ${file.name} • ${(file.size/1024).toFixed(1)} KB`;
+        pngMeta.style.display = 'block';
+      }
+      if (pngInput){
+        pngInput.addEventListener('change', (e)=>{
+          clearPngUI();
+          const f = e.target.files && e.target.files[0];
+          if(!f){ selectedPngFile=null; return; }
+          if(!isPng(f.name)){ alert('Only PNG files are allowed.'); pngInput.value=''; selectedPngFile=null; return; }
+          setSelectedPng(f);
+        });
+      }
+      if (pngDrop){
+        ['dragenter','dragover'].forEach(evt=>{
+          pngDrop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); pngDrop.classList.add('dragover'); });
+        });
+        ['dragleave','dragend','drop'].forEach(evt=>{
+          pngDrop.addEventListener(evt, (e)=>{ if(evt!=='drop'){ pngDrop.classList.remove('dragover'); } });
+        });
+        pngDrop.addEventListener('drop', (e)=>{
+          e.preventDefault(); e.stopPropagation(); pngDrop.classList.remove('dragover');
+          clearPngUI();
+          const f = e.dataTransfer.files && e.dataTransfer.files[0];
+          if(!f){ return; }
+          if(!isPng(f.name)){ alert('Only PNG files are allowed.'); return; }
+          setSelectedPng(f);
+        });
+      }
+
+      function copyKey(btn) {
+        const keyEl = document.getElementById('encryption-key');
+        const keyText = (keyEl && keyEl.textContent ? keyEl.textContent : '').trim();
+        if (!keyText) {
+          alert('No key to copy');
+          return;
+        }
+        const showCopied = () => {
+          if (!btn) return;
+          const originalText = btn.textContent;
+          btn.textContent = '✓ Copied!';
+          const originalBg = btn.style.background;
+          btn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = originalBg || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+          }, 2000);
+        };
+        const fallbackCopy = () => {
+          const ta = document.createElement('textarea');
+          ta.value = keyText;
+          ta.style.position = 'fixed';
+          ta.style.top = '-1000px';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          let ok = false;
+          try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
+          document.body.removeChild(ta);
+          if (ok) { showCopied(); } else { alert('Failed to copy key. Please select and copy manually.'); }
+        };
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(keyText).then(showCopied).catch(fallbackCopy);
+        } else {
+          fallbackCopy();
         }
       }
 
-      function handleImageUpload() {
-        const fileInput = document.getElementById("image-upload");
-        const decryptBtn = document.getElementById("decrypt-btn");
-        const statusDiv = document.getElementById("image-upload-status");
-        
-        if (fileInput.files && fileInput.files[0]) {
-          const file = fileInput.files[0];
-          if (file.type === "image/png") {
-            statusDiv.textContent = "✓ Image uploaded: " + file.name;
-            statusDiv.style.color = "#28a745";
-            decryptBtn.disabled = false;
-            decryptBtn.style.opacity = "1";
-            decryptBtn.style.cursor = "pointer";
-          } else {
-            statusDiv.textContent = "⚠ Please upload a PNG image";
-            statusDiv.style.color = "#dc3545";
-            decryptBtn.disabled = true;
-            decryptBtn.style.opacity = "0.5";
-            decryptBtn.style.cursor = "not-allowed";
+      // Helper to robustly parse JSON or surface server text/HTML errors
+      async function parseResponseSafe(response){
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')){
+          try{ return await response.json(); }catch(e){
+            throw new Error('Invalid JSON received from server');
           }
         }
+        // Fallback to text/HTML and wrap as error
+        const text = await response.text();
+        throw new Error(text && text.trim().length ? text.trim() : `HTTP ${response.status} ${response.statusText}`);
       }
 
       // Encryption form handler
@@ -697,9 +999,11 @@
 
           const loading = document.getElementById("encrypt-loading");
           const result = document.getElementById("encrypt-result");
+          const submitBtn = e.submitter || document.querySelector('#encrypt-form button[type="submit"]');
 
           loading.classList.add("show");
           result.classList.remove("show");
+          if (submitBtn){ submitBtn.disabled = true; }
 
           const formData = new FormData();
           const inputMethod = document.querySelector(
@@ -713,30 +1017,32 @@
             );
             formData.append("use_file", "false");
           } else {
+            if(!selectedTxtFile){
+              loading.classList.remove("show");
+              alert("Please select a .txt file to upload.");
+              if (submitBtn){ submitBtn.disabled = false; }
+              return;
+            }
+            formData.append("uploaded_file", selectedTxtFile);
             formData.append("use_file", "true");
           }
 
           try {
-            const response = await fetch("/encrypt", {
-              method: "POST",
-              body: formData,
-            });
-
-            const data = await response.json();
-
+            const response = await fetch("/encrypt", { method: "POST", body: formData });
+            const data = await parseResponseSafe(response);
             loading.classList.remove("show");
-
-            if (data.success) {
+            if (data && data.success){
               document.getElementById("encryption-key").textContent = data.key;
-              document.getElementById("encrypted-image").src =
-                "/get-image?t=" + new Date().getTime();
               result.classList.add("show");
             } else {
-              alert("Error: " + data.error);
+              const msg = (data && data.error) ? data.error : 'Unknown error';
+              alert("Error: " + msg);
             }
           } catch (error) {
             loading.classList.remove("show");
-            alert("Error connecting to server: " + error);
+            alert("Server error: " + (error && error.message ? error.message : error));
+          } finally {
+            if (submitBtn){ submitBtn.disabled = false; }
           }
         });
 
@@ -748,38 +1054,40 @@
 
           const loading = document.getElementById("decrypt-loading");
           const result = document.getElementById("decrypt-result");
+          const submitBtn = e.submitter || document.getElementById('decrypt-btn');
 
           loading.classList.add("show");
           result.classList.remove("show");
+          if (submitBtn){ submitBtn.disabled = true; submitBtn.style.opacity = '0.5'; submitBtn.style.cursor = 'not-allowed'; }
 
           const formData = new FormData();
           formData.append("key", document.getElementById("key-input").value);
           
           // Add the uploaded image file
-          const imageFile = document.getElementById("image-upload").files[0];
-          if (imageFile) {
-            formData.append("image", imageFile);
+          if (!selectedPngFile) {
+            loading.classList.remove("show");
+            alert("Please upload a PNG image first.");
+            if (submitBtn){ submitBtn.disabled = false; submitBtn.style.opacity = '1'; submitBtn.style.cursor = 'pointer'; }
+            return;
           }
+          formData.append("image", selectedPngFile);
 
           try {
-            const response = await fetch("/decrypt", {
-              method: "POST",
-              body: formData,
-            });
-
-            const data = await response.json();
-
+            const response = await fetch("/decrypt", { method: "POST", body: formData });
+            const data = await parseResponseSafe(response);
             loading.classList.remove("show");
-
-            if (data.success) {
+            if (data && data.success){
               document.getElementById("decrypted-text").textContent = data.text;
               result.classList.add("show");
             } else {
-              alert("Error: " + data.error);
+              const msg = (data && data.error) ? data.error : 'Unknown error';
+              alert("Error: " + msg);
             }
           } catch (error) {
             loading.classList.remove("show");
-            alert("Error connecting to server: " + error);
+            alert("Server error: " + (error && error.message ? error.message : error));
+          } finally {
+            if (submitBtn){ submitBtn.disabled = false; submitBtn.style.opacity = '1'; submitBtn.style.cursor = 'pointer'; }
           }
         });
     </script>
