@@ -16,61 +16,6 @@ A multi-layered image-based cryptography system that encrypts text into PNG imag
 - **Standards:** No official standards or peer review
 - **Example:** Scrambling text, encoding in images, custom ciphers
 
-#### What is Encryption?
-**Encryption** uses mathematically proven algorithms that are secure even when the method is publicly known.
-
-- **Goal:** Make data mathematically impossible to decode without the key
-- **Security:** Security through cryptographic strength - the algorithm is public!
-- **Strength:** Would take millions of years to break with current computers (e.g., AES-256)
-- **Standards:** Rigorously tested, peer-reviewed, government-approved (NIST, etc.)
-- **Example:** AES, RSA, ChaCha20
-
-#### This Project's Classification
-
-| Aspect | This System | True Encryption (AES-256) |
-|--------|-------------|---------------------------|
-| **Type** | Advanced Obfuscation | Cryptographic Encryption |
-| **Security Basis** | Complexity of method | Mathematical proof |
-| **If Method Known** | Can be broken | Still secure with key |
-| **Key Space** | ~40-80 bits | 256 bits (2²⁵⁶ possibilities) |
-| **Attack Resistance** | Moderate | Extremely High |
-| **Standardized** | No | Yes (NIST approved) |
-| **Best For** | Fun, learning, puzzles | Sensitive data, real security |
-
-#### Why This Matters
-
-**What this system CAN protect against:**
-- ✅ Casual observers (looks like random image)
-- ✅ Basic automated scanning tools
-- ✅ People without cryptography knowledge
-- ✅ Quick manual inspection
-
-**What this system CANNOT protect against:**
-- ❌ Professional cryptanalysts
-- ❌ Determined attackers with resources
-- ❌ Known-plaintext attacks (if attacker has text-image pairs)
-- ❌ Legal/government surveillance with warrants
-- ❌ Advanced pattern recognition tools
-
-#### When to Use This Project
-- 🎓 **Learning:** Understand cryptography concepts
-- 🧩 **Puzzles:** Create fun challenges for friends
-- 🎨 **Art Projects:** Hide messages in images creatively
-- 🔬 **Experimentation:** Test ideas and algorithms
-- 💬 **Casual Privacy:** Hide non-critical personal notes
-
-#### When NOT to Use This Project
-- 🚫 **Banking/Financial Data**
-- 🚫 **Passwords or Authentication**
-- 🚫 **Legal Documents**
-- 🚫 **Medical Records**
-- 🚫 **Any data where security truly matters**
-
-**For real security, use established libraries:**
-- Python: `cryptography`, `PyCryptodome` (with AES-256)
-- JavaScript: `crypto` module (with AES-GCM)
-- Industry standard: TLS/SSL for communication
-
 ---
 
 **Bottom Line:** This is a sophisticated obfuscation system that's great for learning and fun, but it's NOT a replacement for real encryption. Think of it as a really good puzzle lock vs. a bank vault.
@@ -110,14 +55,14 @@ A multi-layered image-based cryptography system that encrypts text into PNG imag
 
 ## Features
 
-### Core Encryption Capabilities
+### Core Obfuscation Capabilities
 - **64-Character Alphabet:** Optimized character set (a-z, 0-9, punctuation, special chars) perfectly aligned for 6-bit encoding
 - **Multi-Layer Obfuscation:** 4+ independent obfuscation techniques applied in sequence
 - **Key-Based Decryption:** Generates unique decryption keys for each encryption
-- **Lossless Compression:** All text is perfectly recoverable with the correct key
+- **Lossless Transformation:** All text is perfectly recoverable with the correct key
 - **Case-Insensitive:** Automatically converts uppercase to lowercase for consistent encoding
 
-### Encryption Layers
+### Obfuscation Layers
 
 #### 1. **Color Shuffle**
 - Randomly shuffles RGB channel order (R→G→B, B→R→G, etc.)
@@ -588,72 +533,12 @@ decryption(key)
    - After arrayToGrid → 2D grid [rows[pixels]]
    - Manipulations operate on grid structure
 
-## Capabilities & Limitations
-
-### What It Can Do ✅
-- Encrypt any text containing the 64 supported characters
-- Generate unique encryption keys for each encryption
-- Decrypt images perfectly with correct key
-- Handle texts of arbitrary length (limited only by memory)
-- Produce images that look like random noise
-- Protect against casual inspection and basic reverse-engineering
-- Work without the code (increased security through obscurity)
-- Use multiple independent obfuscation layers simultaneously
-
-### What It Cannot Do ❌
-- **Not cryptographically secure** against professional cryptanalysis
-- Does not support characters outside the 64-character alphabet
-- Cannot decrypt without the original key
-- Does not provide key exchange or key management
-- Not resistant to known-plaintext attacks (if attacker has plaintext-image pairs)
-- Uses pseudo-random number generator (not cryptographically secure)
-- Limited key space compared to modern encryption (AES-256)
-
-### Character Set (64 Characters)
+## Character Set (64 Characters)
 - **Lowercase letters:** a-z (26 chars)
 - **Digits:** 0-9 (10 chars)
 - **Punctuation:** space, . , ! ? ; : " - ( ) < > { } @ # $ & * + = _ % newline (27 chars)
 - **Null character:** þ (thorn) - used for padding only (1 char)
 - **Note:** Uppercase letters are automatically converted to lowercase
-
-### Security Level
-- **Against casual observers:** Very effective - appears as random image
-- **Against hobbyists:** Strong - would take weeks/months to break
-- **Against security researchers:** Moderate - could break in days with code
-- **Against professionals:** Weak - vulnerable to sophisticated attacks
-- **Best use cases:** Fun projects, puzzles, non-critical data, learning cryptography
-
-## Troubleshooting
-- **Unexpected characters in output?** Your input contains unsupported characters (e.g., uppercase, symbols). They are converted to `'a'`.
-- **Import errors?** Run `pip install -r requirements.txt` in your activated virtual environment.
-- **File not found?** Ensure you're running from the project root directory.
-
-## Customization
-
-### Easy Modifications
-- **Change Manipulation Round Count:** 
-  - In `encryption.py` line ~95, modify: `num_manipulationround = random.randint(2, 6)`
-  - Higher = more secure but slower and larger key
-- **Force Only Matrix or Only Determinant:** 
-  - In `encryption.py` line ~97-100, remove the random choice:
-  - For matrix only: `inputArray= matrixObfuscation(inputArray)`
-  - For determinant only: `inputArray = detMultiplier(inputArray)`
-- **Adjust Dummy Pixel Ratio:** 
-  - In `encryption.py` line ~160, modify: `dummyMultiplier = random.randint(2, 7)`
-  - Higher = larger images, more obfuscation
-- **Change Output Filename:** 
-  - In `encryption.py` line ~345, modify: `img.save("output_image.png")`
-
-### Advanced Modifications
-- **Add/Remove Characters:** 
-  - Update `numToLetter` list in both `encryption.py` and `decryption.py` (must match!)
-  - Keep total at 64 characters for optimal performance (power of 2)
-- **Implement Random Dictionary:** 
-  - Would increase security to ~474 bits of entropy
-  - Requires storing dictionary permutation in key (adds ~86 characters to key)
-- **Change Matrix Range:** 
-  - In `matrixObfuscation()`, modify: `M = np.random.randint(-5, 6, (3, 3))`
-  - Larger range = more variation but potential overflow issues
 
 ## Project Structure
 ```
@@ -704,55 +589,7 @@ Key structure:
 - **Memory Usage:** Minimal (entire image kept in RAM)
 - **Image Size:** ~1-10 KB for typical messages (depends on dummy pixel ratio)
 
-## Future Improvements
-- ✅ Fixed determinant-based cascading transformation (now working!)
-- ✅ Implemented randomized interleaving of Matrix and Determinant operations
-- ⬜ Implement randomized dictionary shuffling (+434 bits entropy)
-- ⬜ Add AES-256 encryption layer for true cryptographic security
-- ⬜ Implement secure key exchange mechanism (Diffie-Hellman)
-- ⬜ Add HMAC for integrity verification
-- ⬜ Support full Unicode character set
-- ⬜ Add GUI for easier interaction
-- ⬜ Implement steganography (hide in existing images)
-- ⬜ Add compression for large texts
-- ⬜ Create mobile app version 
-
-
-
-
-## Detailed Comparison: Obfuscation vs. Encryption
-
-| Feature | This System (Obfuscation) | AES-256 (Encryption) |
-|---------|---------------------------|----------------------|
-| **Security Type** | Obfuscation | Cryptographic Encryption |
-| **Key Size** | ~40-80 bits | 256 bits |
-| **Possible Keys** | ~10¹² to 10²⁴ | 2²⁵⁶ (≈10⁷⁷) |
-| **Break Time (Brute Force)** | Hours to months | Billions of years |
-| **Method Public?** | No (security relies on secrecy) | Yes (publicly documented) |
-| **Peer Reviewed?** | No | Yes (extensively) |
-| **Security Level** | Moderate complexity | Military-grade |
-| **Speed** | Moderate (~0.1-0.5s) | Very Fast (<0.01s) |
-| **Key Length** | 50-200 characters | 32 bytes (fixed) |
-| **Standardized** | No | Yes (NIST FIPS 197) |
-| **Hardware Support** | No | Yes (AES-NI instructions) |
-| **Patent Free** | Yes | Yes |
-| **Quantum Resistant** | No | Partially (Grover's algorithm) |
-| **Known Attacks** | Pattern analysis, statistical | None practical |
-| **Best Use Case** | Learning, fun, art | Real security needs |
-
-### Real-World Security Levels
-
-**This System:**
-- **Against your friend:** 🟢🟢🟢🟢🟢 (Excellent - they'll never guess)
-- **Against a hobbyist:** 🟢🟢🟢⚪⚪ (Good - would take significant effort)
-- **Against a CS student:** 🟢🟢⚪⚪⚪ (Fair - could break with analysis)
-- **Against a security researcher:** 🟢⚪⚪⚪⚪ (Weak - would break in days/weeks)
-- **Against a professional:** ⚪⚪⚪⚪⚪ (Minimal - would break in hours/days)
-
-**AES-256:**
-- **Against anyone:** 🟢🟢🟢🟢🟢 (Excellent - effectively unbreakable)
-
-### Why Obfuscation Can Be Useful
+## Why Obfuscation Can Be Useful
 
 Despite not being "true encryption," obfuscation has legitimate uses:
 
