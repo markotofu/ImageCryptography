@@ -92,7 +92,7 @@ def randomizedEncryption(inputArray):
     inputArray= dummyPixelGenerator(inputArray)
     inputArray= arrayToGrid(inputArray)
 
-    num_manipulationround = random.randint(6, 6)
+    num_manipulationround = random.randint(2, 6)
     for i in range(num_manipulationround):
         if random.randint(0,1) == 1:
             inputArray= matrixObfuscation(inputArray)
