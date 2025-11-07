@@ -424,112 +424,7 @@
           Get Started →
         </button>
       </div>
-
-      <!-- Main Application -->
-      <div class="main-app" id="main-app">
-        <button class="back-btn" onclick="goBack()">← Back to Home</button>
-        <h1>🔐 Image Cryptography</h1>
-
-        <div class="mode-selector">
-          <button
-            class="mode-btn active"
-            id="encrypt-mode-btn"
-            onclick="switchMode('encrypt')"
-          >
-            Encrypt Text
-          </button>
-          <button
-            class="mode-btn"
-            id="decrypt-mode-btn"
-            onclick="switchMode('decrypt')"
-          >
-            Decrypt Image
-          </button>
-        </div>
-
-        <!-- Encryption Section -->
-        <div id="encrypt-section" class="section active">
-          <form id="encrypt-form">
-            <div class="input-group">
-              <label>Input Method:</label>
-              <div class="radio-group">
-                <label class="radio-label">
-                  <input
-                    type="radio"
-                    name="input-method"
-                    value="text"
-                    checked
-                    onchange="toggleInput()"
-                  />
-                  Direct Text Input
-                </label>
-                <label class="radio-label">
-                  <input
-                    type="radio"
-                    name="input-method"
-                    value="file"
-                    onchange="toggleInput()"
-                  />
-                  Use testText File
-                </label>
-              </div>
-            </div>
-
-            <div class="input-group" id="text-input-group">
-              <label for="text-input">Enter Text to Encrypt:</label>
-              <textarea
-                id="text-input"
-                name="text"
-                placeholder="Type your message here..."
-              ></textarea>
-            </div>
-
-            <button type="submit">🔒 Encrypt</button>
-          </form>
-
-          <div class="loading" id="encrypt-loading">
-            <div class="spinner"></div>
-            <p>Encrypting...</p>
-          </div>
-
-          <div class="result" id="encrypt-result">
-            <h3>Encryption Result:</h3>
-            <div class="key-display" id="encryption-key"></div>
-            <div class="image-preview">
-              <h4>Generated Image:</h4>
-              <img id="encrypted-image" src="" alt="Encrypted Image" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Decryption Section -->
-        <div id="decrypt-section" class="section">
-          <form id="decrypt-form">
-            <div class="input-group">
-              <label for="key-input">Enter Decryption Key:</label>
-              <input
-                type="text"
-                id="key-input"
-                name="key"
-                placeholder="Paste your encryption key here..."
-                required
-              />
-            </div>
-
-            <button type="submit">🔓 Decrypt</button>
-          </form>
-
-          <div class="loading" id="decrypt-loading">
-            <div class="spinner"></div>
-            <p>Decrypting...</p>
-          </div>
-
-          <div class="result" id="decrypt-result">
-            <h3>Decrypted Text:</h3>
-            <div class="decrypted-text" id="decrypted-text"></div>
-          </div>
-        </div>
-      </div>
+      
     </div>
 
     <script>
@@ -546,48 +441,12 @@
       }
 
       function startApp() {
-        document.getElementById("landing-page").classList.add("hidden");
-        document.getElementById("main-app").classList.add("active");
-
-        // Set the correct mode in the main app
+        // Redirect to a dedicated page depending on selection
         if (selectedMode === "decrypt") {
-          switchMode("decrypt");
-        }
-      }
-
-      function goBack() {
-        document.getElementById("landing-page").classList.remove("hidden");
-        document.getElementById("main-app").classList.remove("active");
-      }
-
-      function switchMode(mode) {
-        // Update button states
-        document
-          .querySelectorAll(".mode-btn")
-          .forEach((btn) => btn.classList.remove("active"));
-
-        if (mode === "encrypt") {
-          document.getElementById("encrypt-mode-btn").classList.add("active");
+          window.location.href = "/decrypt-ui";
         } else {
-          document.getElementById("decrypt-mode-btn").classList.add("active");
+          window.location.href = "/encrypt-ui";
         }
-
-        // Hide all sections
-        document
-          .querySelectorAll(".section")
-          .forEach((section) => section.classList.remove("active"));
-
-        // Show selected section
-        if (mode === "encrypt") {
-          document.getElementById("encrypt-section").classList.add("active");
-        } else {
-          document.getElementById("decrypt-section").classList.add("active");
-        }
-
-        // Hide results
-        document
-          .querySelectorAll(".result")
-          .forEach((result) => result.classList.remove("show"));
       }
 
       function toggleInput() {
@@ -603,93 +462,7 @@
         }
       }
 
-      // Encryption form handler
-      document
-        .getElementById("encrypt-form")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-
-          const loading = document.getElementById("encrypt-loading");
-          const result = document.getElementById("encrypt-result");
-
-          loading.classList.add("show");
-          result.classList.remove("show");
-
-          const formData = new FormData();
-          const inputMethod = document.querySelector(
-            'input[name="input-method"]:checked'
-          ).value;
-
-          if (inputMethod === "text") {
-            formData.append(
-              "text",
-              document.getElementById("text-input").value
-            );
-            formData.append("use_file", "false");
-          } else {
-            formData.append("use_file", "true");
-          }
-
-          try {
-            const response = await fetch("/encrypt", {
-              method: "POST",
-              body: formData,
-            });
-
-            const data = await response.json();
-
-            loading.classList.remove("show");
-
-            if (data.success) {
-              document.getElementById("encryption-key").textContent = data.key;
-              document.getElementById("encrypted-image").src =
-                "/get-image?t=" + new Date().getTime();
-              result.classList.add("show");
-            } else {
-              alert("Error: " + data.error);
-            }
-          } catch (error) {
-            loading.classList.remove("show");
-            alert("Error connecting to server: " + error);
-          }
-        });
-
-      // Decryption form handler
-      document
-        .getElementById("decrypt-form")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-
-          const loading = document.getElementById("decrypt-loading");
-          const result = document.getElementById("decrypt-result");
-
-          loading.classList.add("show");
-          result.classList.remove("show");
-
-          const formData = new FormData();
-          formData.append("key", document.getElementById("key-input").value);
-
-          try {
-            const response = await fetch("/decrypt", {
-              method: "POST",
-              body: formData,
-            });
-
-            const data = await response.json();
-
-            loading.classList.remove("show");
-
-            if (data.success) {
-              document.getElementById("decrypted-text").textContent = data.text;
-              result.classList.add("show");
-            } else {
-              alert("Error: " + data.error);
-            }
-          } catch (error) {
-            loading.classList.remove("show");
-            alert("Error connecting to server: " + error);
-          }
-        });
+      // No form handlers on the landing page
     </script>
   </body>
 </html>
