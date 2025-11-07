@@ -89,15 +89,22 @@ def randomizedEncryption(inputArray):
     count = 0 
     usedMethods = []
     inputArray= colorShuffle(inputArray)
-    inputArray= matrixObfuscation(inputArray)
     inputArray= dummyPixelGenerator(inputArray)
     inputArray= arrayToGrid(inputArray)
-    multiplier, randomPos = detMultiplier(inputArray)
+    
+    # Apply matrix obfuscation multiple times (randomly 2-5 times)
+    num_matrix_rounds = random.randint(2, 5)
+    for i in range(num_matrix_rounds):
+        inputArray= matrixObfuscation(inputArray)
+    
+    # # Apply determinant-based cascading transformation
+    # inputArray = detMultiplier(inputArray)
 
     return inputArray
 
-def matrixObfuscation(pixelArray):
-    """Apply reversible 3x3 matrix transformation using modular arithmetic (mod 256)"""
+def matrixObfuscation(grid):
+    """Apply reversible 3x3 matrix transformation using modular arithmetic (mod 256)
+    Expects grid format: list of rows, each row contains pixels"""
     global key
     
     # Generate a random 3x3 matrix with odd determinant (coprime with 256)
@@ -117,12 +124,15 @@ def matrixObfuscation(pixelArray):
         # Fallback to identity matrix if no valid matrix found
         M = np.eye(3, dtype=int)
     
-    # Apply transformation to each pixel: P' = (M × P) mod 256
-    transformedPixels = []
-    for pixel in pixelArray:
-        pixel_vec = np.array(pixel, dtype=int)
-        transformed = np.dot(M, pixel_vec) % 256
-        transformedPixels.append(transformed.tolist())
+    # Process grid format: list of rows, each row contains pixels
+    transformedGrid = []
+    for row in grid:
+        transformedRow = []
+        for pixel in row:
+            pixel_vec = np.array(pixel, dtype=int)
+            transformed = np.dot(M, pixel_vec) % 256
+            transformedRow.append(transformed.tolist())
+        transformedGrid.append(transformedRow)
     
     # Encode matrix in key: flatten to 9 values
     matrix_flat = M.flatten().tolist()
@@ -137,7 +147,7 @@ def matrixObfuscation(pixelArray):
     command = f"{total_length}M{matrix_str}"
     key += command
     
-    return transformedPixels
+    return transformedGrid
 
 def dummyPixelGenerator(inputArray):
     global key
@@ -155,8 +165,6 @@ def dummyPixelGenerator(inputArray):
 
     key += "3d"+str(dummyMultiplier)
     return finalArray
-
-
 
 def colorShuffle(inputArray):
     global key
@@ -223,42 +231,122 @@ def dimensionChecker(inputArray):
 
 def detMultiplier(grid):
     """
-    Picks a random pixel from the top row (not at ends), creates a 3x3 matrix from it
-    and its neighbors, finds the determinant, and returns a multiplier (1, 2, or 3).
+    Cascading determinant multiplication:
+    1. Pick random position in second row (skip top row)
+    2. Calculate determinant from 3 consecutive pixels
+    3. Multiply first pixel by determinant
+    4. Shift window: use the modified pixel and next 2 pixels to calculate new determinant
+    5. Continue multiplying each subsequent pixel until end of array
+    Note: Top row (row 0) is NOT affected
     """
     global key
-    topRow = grid[0]
-    width = len(topRow)
+    width = len(grid[0]) if len(grid) > 0 else 0
     
-    # Pick a random position from top row (not at ends)
+    # Pick a random starting position in the SECOND row (skip top row)
     if width <= 3:
-        randomPos = 1  # If exactly 3 wide, use middle position
+        randomPos = 1
     else:
-        randomPos = random.randint(1, width - 2)  # Exclude first and last
+        randomPos = random.randint(1, width - 2)
     
-    # Get the three pixels: left, center (picked), right
-    pixelLeft = topRow[randomPos - 1]
-    pixelCenter = topRow[randomPos]
-    pixelRight = topRow[randomPos + 1]
-    
-    # Create a 3x3 matrix from the three pixels
-    matrix = np.array([
-        pixelLeft,    # [R, G, B] from left pixel
-        pixelCenter,  # [R, G, B] from center pixel
-        pixelRight    # [R, G, B] from right pixel
-    ])
-    
-    # Calculate determinant
-    det = int(np.linalg.det(matrix))
-    
-    # Convert to multiplier (1, 2, or 3)
-    multiplier = (abs(det) % 3) + 1  # Ensures result is 1, 2, or 3
-    
-    command = "m" + str(randomPos) + "," + str(multiplier)
+    # Store the random position in the key
+    command = f"4m{randomPos}"
     key += command
     
-    return multiplier, randomPos
-
+    # Save top row unchanged
+    topRow = grid[0][:]
+    
+    # Flatten grid EXCLUDING the first row
+    allPixels = []
+    for rowIdx in range(1, len(grid)):  # Start from row 1, skip row 0
+        for pixel in grid[rowIdx]:
+            allPixels.append(pixel)
+    
+    # Calculate starting index in the data rows (not including top row)
+    startIndex = randomPos
+    
+    # Get initial three pixels for first determinant
+    if startIndex >= len(allPixels) - 2 or len(allPixels) < 3:
+        # Not enough pixels, return unchanged
+        return grid
+    
+    pixelLeft = allPixels[startIndex - 1]
+    pixelCenter = allPixels[startIndex]
+    pixelRight = allPixels[startIndex + 1]
+    
+    # Process each pixel from startIndex to end
+    currentIndex = startIndex
+    
+    while currentIndex < len(allPixels):
+        # Create 3x3 matrix from current window
+        matrix = np.array([
+            pixelLeft,
+            pixelCenter,
+            pixelRight
+        ])
+        
+        # Calculate determinant
+        det = int(np.linalg.det(matrix))
+        
+        # Use determinant for transformation
+        multiplier = (abs(det) % 3) + 1  # 1, 2, or 3
+        addValue = (abs(det) % 127) + 1   # 1 to 127 (keep it moderate)
+        
+        # Transform pixel: add, multiply, subtract
+        transformed = []
+        for i in range(3):
+            val = pixelLeft[i]
+            val = (val + addValue) % 256      # Add to avoid zeros
+            val = (val * multiplier) % 256     # Multiply by small multiplier
+            val = (val - addValue) % 256      # Subtract for extra obfuscation
+            transformed.append(val)
+        
+        allPixels[currentIndex - 1] = transformed
+        
+        # Shift the window: left becomes the modified pixel
+        pixelLeft = transformed
+        pixelCenter = pixelRight
+        
+        # Move to next pixel
+        currentIndex += 1
+        
+        # Get next right pixel if available
+        if currentIndex + 1 < len(allPixels):
+            pixelRight = allPixels[currentIndex + 1]
+        else:
+            # Last pixel - transform it with current window
+            if currentIndex < len(allPixels):
+                matrix = np.array([pixelLeft, pixelCenter, [0, 0, 0]])
+                det = int(np.linalg.det(matrix))
+                multiplier = (abs(det) % 3) + 1
+                addValue = (abs(det) % 127) + 1
+                
+                transformed = []
+                for i in range(3):
+                    val = pixelCenter[i]
+                    val = (val + addValue) % 256
+                    val = (val * multiplier) % 256
+                    val = (val - addValue) % 256
+                    transformed.append(val)
+                
+                allPixels[currentIndex] = transformed
+            break
+    
+    # Reconstruct grid: top row unchanged, then modified data rows
+    height = len(grid)
+    width = len(grid[0]) if height > 0 else 0
+    newGrid = [topRow]  # Start with unchanged top row
+    
+    # Rebuild data rows from modified pixels
+    pixelIndex = 0
+    for y in range(1, height):  # Start from row 1
+        row = []
+        for x in range(width):
+            if pixelIndex < len(allPixels):
+                row.append(allPixels[pixelIndex])
+                pixelIndex += 1
+        newGrid.append(row)
+    
+    return newGrid
 
 def arrayToGrid(inputArray):
 
@@ -288,7 +376,7 @@ def arrayToGrid(inputArray):
     
     return grid
 
-
+    
 def encryption(userText):
     global key
     key = ""  # Reset key for new encryption

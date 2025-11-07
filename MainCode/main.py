@@ -1,5 +1,6 @@
 import encryption
 import decryption
+import os
 mode = None
 status = True
 while(status):
@@ -14,7 +15,8 @@ while(status):
             text = input("Enter the text to convert to image: ")
             encryption.encryption(text)
         elif textOrImage =="2":
-            file_path = "MainCode/testText"
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            file_path = os.path.join(script_dir, "testText")
             with open(file_path, 'r', encoding='utf-8') as f:
                 text = f.read()
             encryption.encryption(text)
