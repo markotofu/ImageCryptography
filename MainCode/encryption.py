@@ -6,12 +6,11 @@ import random
 key = ""
 numToLetter = [
     'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-    'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
     '0','1','2','3','4','5','6','7','8','9',
-    ' ','.',',','!','?',';',':','"','-','(',')',
+    ' ','.',',','!','?',';',':','"','-','(',')','<','>','{','}'
     '@','#','$','&','*','+','=','_','%','\n','þ'
 ]
-NULL_CHAR_INDEX = len(numToLetter) - 1  # Index 85: 'þ' (our null character)
+NULL_CHAR_INDEX = len(numToLetter) - 1  # Index 59: 'þ' (our null character)
 
 
 def modular_inverse(a, m):
@@ -63,7 +62,7 @@ def textToArray(textSize, userText):
 
     pixelArray = []
     for i in range(textSize):
-                char = userText[i]
+                char = userText[i].lower()  # Convert to lowercase
                 char_num = numToLetter.index(char) if char in numToLetter else NULL_CHAR_INDEX
                 pixelArray.append(char_num)
 
