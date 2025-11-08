@@ -345,9 +345,8 @@ def encryption(userText):
     for command in reversed(manipulationCommands):
         key += command
     
-    # Save in MainCode folder
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_path = os.path.join(script_dir, "output_image.png")
+    # Save to project root to match download endpoints
+    output_path = os.path.join(os.getcwd(), "output_image.png")
     img.save(output_path)
     print(f"Encryption Key: {key}")
     return key

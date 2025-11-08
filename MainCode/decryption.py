@@ -240,11 +240,9 @@ def parseKey(key):
     return commands
 
 
-def decryption(encryptionKey):
-    """Main decryption function - only requires the key as input"""
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    ImagePath = os.path.join(script_dir, "output_image.png")
-    img = Image.open(ImagePath)
+def decryption(encryptionKey, image_path):
+    """Main decryption function - requires the key and image path as input"""
+    img = Image.open(image_path)
     
     # Convert image to grid
     grid = imgToGrid(img)

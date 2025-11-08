@@ -25,6 +25,7 @@
         --primary-1: #667eea;
         --primary-2: #764ba2;
         --primary-border: #667eea;
+        --credit-color: #667eea;
       }
 
       body.theme-decrypt {
@@ -33,6 +34,7 @@
         --primary-1: #1f3b4d;
         --primary-2: #16222a;
         --primary-border: #1f3b4d;
+        --credit-color: #0f2027;
       }
 
       body {
@@ -65,10 +67,22 @@
       .landing-page {
         text-align: center;
         padding: 40px 20px;
+        position: relative;
       }
 
       .landing-page.hidden {
         display: none;
+      }
+
+      .landing-credit {
+        position: absolute;
+        bottom: 0px;
+        right: 10px;
+        font-size: 0.9em;
+        color: var(--credit-color);
+        font-weight: 500;
+        text-shadow: none;
+        transition: color 0.3s ease;
       }
 
       .landing-title {
@@ -604,7 +618,7 @@
     <div class="container">
       <!-- Landing Page -->
       <div class="landing-page" id="landing-page">
-  <h1 class="landing-title">Image Cryptography</h1>
+        <h1 class="landing-title">Image Cryptography</h1>
         <p class="landing-subtitle">
           Secure your messages by converting text into encrypted images
         </p>
@@ -625,9 +639,9 @@
         <button class="get-started-btn" onclick="startApp()">
           Get Started
         </button>
-      </div>
 
-      <!-- Main Application -->
+        <div class="landing-credit">By: Group Doughnut</div>
+      </div>      <!-- Main Application -->
       <div class="main-app" id="main-app">
   <button class="back-btn" onclick="goBack()">Back to Home</button>
   <h1>Image Cryptography</h1>
